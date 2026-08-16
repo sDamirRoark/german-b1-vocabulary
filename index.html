@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>B1 Wortschatz — Study Edition</title>
+<style>
+:root{
+  --bg:#f5f6f8;--card:#fff;--ink:#17202a;--muted:#697386;--line:#dfe3e8;
+  --brand:#c62828;--brand-soft:#fff0ef;--green:#1f7a4d;--green-soft:#eaf7f0;
+  --amber:#9a6700;--amber-soft:#fff6df;--blue:#2459a9;--blue-soft:#edf4ff;
+  --shadow:0 12px 34px rgba(20,28,38,.08);--radius:18px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid rgba(36,89,169,.25);outline-offset:2px}
+.app{max-width:1080px;margin:0 auto;padding:0 18px 60px}
+.topbar{position:sticky;top:0;z-index:20;background:rgba(245,246,248,.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar-inner{max-width:1080px;margin:0 auto;padding:14px 18px 10px}
+.brand-row{display:flex;align-items:center;gap:16px;justify-content:space-between}
+.brand{min-width:0}
+.brand-title{font-weight:850;font-size:23px;letter-spacing:-.5px}
+.brand-title span{color:var(--brand)}
+.brand-sub{font-size:12px;color:var(--muted);margin-top:3px}
+.header-stats{display:flex;gap:12px;align-items:center}
+.mini-stat{font-size:11px;color:var(--muted);text-align:right;white-space:nowrap}
+.mini-stat strong{display:block;font-size:17px;color:var(--ink)}
+.master-progress{height:6px;background:#e5e8ec;border-radius:999px;overflow:hidden;margin-top:10px}
+.master-progress>div{height:100%;width:0;background:var(--green);transition:width .25s ease}
+.tabs{display:flex;gap:4px;margin-top:10px;overflow-x:auto;padding-bottom:1px}
+.tab{border:0;background:transparent;color:var(--muted);font-weight:750;padding:10px 13px;border-radius:10px;white-space:nowrap}
+.tab.active{background:#fff;color:var(--ink);box-shadow:0 1px 0 rgba(0,0,0,.03)}
+.panel{display:none;padding-top:22px}.panel.active{display:block}
+.hero{background:linear-gradient(135deg,#fff 0%,#fff7f6 100%);border:1px solid var(--line);border-radius:var(--radius);padding:20px;display:flex;justify-content:space-between;gap:20px;align-items:center;margin-bottom:18px}
+.hero h1{font-size:22px;margin:0 0 6px;letter-spacing:-.3px}
+.hero p{margin:0;color:var(--muted);font-size:14px;line-height:1.5}
+.btn{border:1px solid var(--line);background:#fff;color:var(--ink);padding:10px 14px;border-radius:11px;font-weight:750}
+.btn:hover{border-color:#b8c0ca}
+.btn.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+.btn.brand{background:var(--brand);color:#fff;border-color:var(--brand)}
+.btn.soft{background:#f7f8fa}
+.btn.small{padding:7px 10px;font-size:12px;border-radius:9px}
+.btn.icon{padding:8px 10px;min-width:40px}
+.setup{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin:0 0 16px}
+.field{display:flex;flex-direction:column;gap:5px;min-width:145px}
+.field label{font-size:11px;font-weight:750;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.field select,.search{background:#fff;border:1px solid var(--line);border-radius:11px;padding:10px 12px;color:var(--ink)}
+.session-shell{max-width:700px;margin:0 auto}
+.session-meta{display:flex;justify-content:space-between;gap:12px;color:var(--muted);font-size:12px;margin:8px 2px}
+.session-bar{height:6px;border-radius:999px;background:#e3e7eb;overflow:hidden;margin-bottom:12px}
+.session-bar>div{height:100%;background:var(--brand);width:0;transition:width .2s}
+.flashcard{background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);min-height:370px;padding:26px;position:relative;display:flex;flex-direction:column}
+.card-top{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.card-label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:800}
+.star{border:0;background:transparent;font-size:24px;color:#aeb5bf;padding:3px 6px;line-height:1}
+.star.on{color:#d79a00}
+.card-main{flex:1;display:flex;flex-direction:column;justify-content:center;text-align:center;padding:24px 4px}
+.headword{font-size:38px;line-height:1.15;font-weight:850;letter-spacing:-.7px;overflow-wrap:anywhere}
+.forms{font-size:14px;line-height:1.5;color:var(--muted);margin-top:12px}
+.answer{display:none;margin-top:24px;padding-top:22px;border-top:1px solid var(--line)}
+.answer.show{display:block}
+.meaning{font-size:25px;line-height:1.3;font-weight:800;color:var(--blue)}
+.example-box{margin:20px auto 0;max-width:590px;text-align:left;background:#f8f9fb;border-radius:13px;padding:14px 16px}
+.example-title{font-size:10px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px}
+.example-text{font-size:16px;line-height:1.58}
+.card-actions{display:flex;justify-content:center;gap:8px;margin-top:12px;flex-wrap:wrap}
+.reveal-btn{width:100%;margin-top:14px;padding:14px;font-size:15px}
+.ratings{display:none;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:14px}
+.ratings.show{display:grid}
+.rate{border:1px solid var(--line);background:#fff;border-radius:12px;padding:11px 7px;font-weight:800}
+.rate small{display:block;font-size:10px;font-weight:650;color:var(--muted);margin-top:3px}
+.rate.again{border-color:#e2a5a0;background:var(--brand-soft);color:#a9241a}
+.rate.hard{border-color:#ead08b;background:var(--amber-soft);color:#7c5700}
+.rate.good{border-color:#b4d8c5;background:var(--green-soft);color:var(--green)}
+.rate.easy{border-color:#b9ccec;background:var(--blue-soft);color:var(--blue)}
+.session-empty{background:#fff;border:1px dashed #bbc3ce;border-radius:18px;padding:34px;text-align:center;color:var(--muted)}
+.shortcuts{text-align:center;margin:12px 0 0;color:var(--muted);font-size:11px}
+.search-wrap{display:flex;gap:9px;align-items:center;margin-bottom:12px}
+.search{width:100%;font-size:15px;padding:12px 14px}
+.filters{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}
+.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 11px;color:var(--muted);font-size:12px;font-weight:750}
+.chip.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.result-meta{font-size:12px;color:var(--muted);margin:0 2px 9px;display:flex;justify-content:space-between;gap:10px}
+.word-list{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.word-row{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) auto;gap:14px;align-items:center;padding:13px 15px;border-bottom:1px solid var(--line);cursor:pointer}
+.word-row:last-child{border-bottom:0}
+.word-row:hover{background:#fafbfc}
+.word-de{font-weight:800;overflow-wrap:anywhere}.word-forms{font-size:11px;color:var(--muted);font-weight:500;margin-top:3px}
+.word-en{color:var(--blue);font-size:14px;line-height:1.35}
+.badge{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;border-radius:999px;padding:5px 8px;background:#f1f3f5;color:var(--muted);white-space:nowrap}
+.badge.learning{background:var(--amber-soft);color:var(--amber)}.badge.mastered{background:var(--green-soft);color:var(--green)}.badge.due{background:var(--brand-soft);color:var(--brand)}
+.pager{display:flex;justify-content:center;gap:8px;margin-top:12px}
+.empty{padding:30px;text-align:center;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.stat-card{background:#fff;border:1px solid var(--line);border-radius:15px;padding:16px}
+.stat-card .n{font-size:27px;font-weight:850}.stat-card .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-top:3px}
+.section-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-top:14px}
+.section-card h2{font-size:16px;margin:0 0 10px}.section-card p{font-size:13px;color:var(--muted);line-height:1.55;margin:5px 0}
+.progress-row{margin:13px 0}.progress-row-label{display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px}.bar{height:9px;background:#edf0f3;border-radius:999px;overflow:hidden}.bar>div{height:100%;background:var(--green)}
+.danger{color:#a9241a}
+.modal{position:fixed;inset:0;background:rgba(18,25,34,.48);display:none;align-items:center;justify-content:center;padding:18px;z-index:50}
+.modal.open{display:flex}
+.modal-card{width:min(650px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:20px;box-shadow:0 24px 70px rgba(0,0,0,.2);padding:22px}
+.modal-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.modal h2{margin:0;font-size:28px;overflow-wrap:anywhere}.modal .en{font-size:20px;font-weight:800;color:var(--blue);margin-top:10px}
+.modal .example-box{margin-top:16px}
+.modal-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:17px}
+.close-x{border:0;background:#f1f3f5;border-radius:10px;padding:7px 10px;font-size:18px}
+.note{font-size:11px;color:var(--muted);line-height:1.55;margin-top:26px;padding:15px 2px;border-top:1px solid var(--line)}
+.file-input{display:none}
+.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#17202a;color:#fff;padding:10px 14px;border-radius:10px;font-size:12px;z-index:80;transition:.2s}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:760px){
+  .app{padding:0 12px 45px}.topbar-inner{padding-left:12px;padding-right:12px}
+  .brand-title{font-size:20px}.header-stats .mini-stat:first-child{display:none}
+  .hero{align-items:flex-start;flex-direction:column}.hero .btn{width:100%}
+  .setup{display:grid;grid-template-columns:1fr 1fr}.setup .btn{grid-column:1/-1}
+  .headword{font-size:32px}.flashcard{min-height:390px;padding:20px 17px}
+  .ratings{grid-template-columns:1fr 1fr}
+  .word-row{grid-template-columns:minmax(0,1fr) auto}.word-en{grid-column:1/-1;grid-row:2}
+  .grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:430px){
+  .setup{grid-template-columns:1fr}.setup .btn{grid-column:auto}
+  .header-stats{gap:6px}.mini-stat strong{font-size:15px}
+  .headword{font-size:29px}.meaning{font-size:22px}
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand-row">
+      <div class="brand">
+        <div class="brand-title">B1 <span>Wortschatz</span></div>
+        <div class="brand-sub">Goethe list · study edition with English meanings</div>
+      </div>
+      <div class="header-stats">
+        <div class="mini-stat"><strong id="dueTop">0</strong>due</div>
+        <div class="mini-stat"><strong><span id="masteredTop">0</span>/<span id="totalTop">0</span></strong>mastered</div>
+      </div>
+    </div>
+    <div class="master-progress"><div id="masterBar"></div></div>
+    <nav class="tabs" aria-label="Main navigation">
+      <button class="tab active" data-tab="learn">Learn</button>
+      <button class="tab" data-tab="browse">Browse</button>
+      <button class="tab" data-tab="difficult">Difficult</button>
+      <button class="tab" data-tab="progress">Progress</button>
+    </nav>
+  </div>
+</header>
+
+<main class="app">
+  <section class="panel active" id="panel-learn">
+    <div class="hero">
+      <div>
+        <h1>Learn the meaning first, then reinforce it in context.</h1>
+        <p>English glosses are built into every card. Reveal the answer, read the Goethe example, then rate how well you knew it.</p>
+      </div>
+      <button class="btn brand" id="quickStart">Start smart review</button>
+    </div>
+
+    <div class="setup">
+      <div class="field">
+        <label for="studyMode">Words</label>
+        <select id="studyMode">
+          <option value="smart">Smart review</option>
+          <option value="new">New words</option>
+          <option value="difficult">Difficult words</option>
+          <option value="starred">Starred words</option>
+          <option value="all">All words</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="direction">Direction</label>
+        <select id="direction">
+          <option value="de-en">German → English</option>
+          <option value="en-de">English → German</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="sessionSize">Session</label>
+        <select id="sessionSize">
+          <option value="10">10 cards</option>
+          <option value="20" selected>20 cards</option>
+          <option value="40">40 cards</option>
+        </select>
+      </div>
+      <button class="btn primary" id="startSession">New session</button>
+    </div>
+
+    <div class="session-shell" id="sessionShell">
+      <div class="session-meta"><span id="sessionLabel">Ready</span><span id="sessionCount">0 / 0</span></div>
+      <div class="session-bar"><div id="sessionBar"></div></div>
+      <div id="cardMount"></div>
+      <div class="shortcuts">Keyboard: Space = reveal · 1 Again · 2 Hard · 3 Good · 4 Easy · S = speak</div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-browse">
+    <div class="search-wrap">
+      <input class="search" id="searchInput" type="search" placeholder="Search German or English… e.g. abholen, pick up, Wohnung" autocomplete="off">
+    </div>
+    <div class="filters" id="browseFilters">
+      <button class="chip active" data-filter="all">All</button>
+      <button class="chip" data-filter="new">New</button>
+      <button class="chip" data-filter="learning">Learning</button>
+      <button class="chip" data-filter="due">Due</button>
+      <button class="chip" data-filter="mastered">Mastered</button>
+      <button class="chip" data-filter="starred">★ Starred</button>
+    </div>
+    <div class="result-meta"><span id="resultCount"></span><span>Click a word for details</span></div>
+    <div class="word-list" id="wordList"></div>
+    <div class="pager" id="pager"></div>
+  </section>
+
+  <section class="panel" id="panel-difficult">
+    <div class="hero">
+      <div>
+        <h1>Your difficult words</h1>
+        <p>Words you rated “Again” or “Hard” rise here automatically. Use this as your high-value revision list.</p>
+      </div>
+      <button class="btn primary" id="studyDifficult">Study difficult words</button>
+    </div>
+    <div class="word-list" id="difficultList"></div>
+  </section>
+
+  <section class="panel" id="panel-progress">
+    <div class="grid">
+      <div class="stat-card"><div class="n" id="statNew">0</div><div class="l">New</div></div>
+      <div class="stat-card"><div class="n" id="statLearning">0</div><div class="l">Learning</div></div>
+      <div class="stat-card"><div class="n" id="statDue">0</div><div class="l">Due now</div></div>
+      <div class="stat-card"><div class="n" id="statMastered">0</div><div class="l">Mastered</div></div>
+    </div>
+    <div class="section-card">
+      <h2>Overall mastery</h2>
+      <div class="progress-row">
+        <div class="progress-row-label"><span>Mastered</span><span id="masterPct">0%</span></div>
+        <div class="bar"><div id="progressMasterBar" style="width:0"></div></div>
+      </div>
+      <p>“Mastered” means a word has reached level 4 or 5. Words can still return for review later.</p>
+    </div>
+    <div class="section-card">
+      <h2>Progress backup</h2>
+      <p>Your progress stays in this browser/device. Export a small JSON backup if you move the HTML file or change computers.</p>
+      <div class="modal-actions">
+        <button class="btn" id="exportBtn">Export progress</button>
+        <button class="btn" id="importBtn">Import progress</button>
+        <input class="file-input" type="file" accept="application/json,.json" id="importFile">
+        <button class="btn danger" id="resetBtn">Reset progress</button>
+      </div>
+    </div>
+    <div class="section-card">
+      <h2>How the review works</h2>
+      <p>Again returns a word soon. Hard schedules a short review. Good and Easy gradually increase the interval. Smart review prioritizes words that are due, then introduces new words.</p>
+    </div>
+  </section>
+
+  <div class="note">
+    German entries and example sentences come from the uploaded Goethe-Zertifikat B1 vocabulary-list extraction. English meanings are supplemental study glosses, not official Goethe translations. The source extraction contains a few line-break/OCR artefacts, so keep the original PDF as the reference when an entry looks unusual.
+  </div>
+</main>
+
+<div class="modal" id="detailModal" role="dialog" aria-modal="true" aria-labelledby="modalWord">
+  <div class="modal-card">
+    <div class="modal-top">
+      <div><h2 id="modalWord"></h2><div class="forms" id="modalForms"></div></div>
+      <button class="close-x" id="modalClose" aria-label="Close">×</button>
+    </div>
+    <div class="en" id="modalEnglish"></div>
+    <div class="example-box"><div class="example-title">Goethe example</div><div class="example-text" id="modalExample"></div></div>
+    <div class="modal-actions">
+      <button class="btn" id="modalSpeak">🔊 Speak German</button>
+      <button class="btn" id="modalStar">☆ Star</button>
+      <button class="btn" id="modalStudy">Study this word</button>
+      <button class="btn" id="modalMaster">Mark mastered</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="data/words-00.js"></script>
+<script src="data/words-01.js"></script>
+<script src="data/words-02.js"></script>
+<script src="data/words-03.js"></script>
+<script src="data/words-04.js"></script>
+<script src="data/words-05.js"></script>
+<script src="data/words-06.js"></script>
+<script src="data/words-07.js"></script>
+<script src="data/words-08.js"></script>
+<script src="data/words-09.js"></script>
+<script src="data/words-10.js"></script>
+<script src="data/words-11.js"></script>
+<script src="data/words-12.js"></script>
+<script src="data/words-13.js"></script>
+<script src="data/words-14.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
